@@ -1,0 +1,107 @@
+# services:
+#   bidding-service:
+#     build:
+#       context: .
+#       dockerfile: bidding-service/Dockerfile
+#     ports:
+#       - "8086-8088:8086" # Dynamic port range for replicas
+#     environment:
+#       - GO_ENV=production
+#       - PORT=8086
+#     healthcheck:
+#       test: ["CMD", "wget", "-qO-", "http://localhost:8086/health"]
+#       interval: 30s
+#       timeout: 10s
+#       retries: 3
+#     deploy:
+#       replicas: 3
+#       resources:
+#         limits:
+#           cpus: "0.5"
+#           memory: 256M
+#     restart: unless-stopped
+#
+#   auction-service:
+#     build:
+#       context: .
+#       dockerfile: auction-service/Dockerfile
+#     ports:
+#       - "8085:8085"
+#     environment:
+#       - GO_ENV=production
+#       - PORT=8085
+#       - BIDDING_SERVICE_URL=http://bidding-service:8086
+#     depends_on:
+#       - bidding-service
+#     healthcheck:
+#       test: ["CMD", "wget", "-qO-", "http://localhost:8085/health"]
+#       interval: 30s
+#       timeout: 10s
+#       retries: 3
+#     deploy:
+#       resources:
+#         limits:
+#           cpus: "1.0"
+#           memory: 512M
+#     restart: unless-stopped
+#
+# networks:
+#   default:
+#     driver: bridge
+
+version: "3.8"
+
+services:
+  bidding-service:
+    build:
+      context: .
+      dockerfile: bidding-service/Dockerfile
+    ports:
+      - "8086-8088:8086" # Dynamic port range for replicas
+    environment:
+      - GO_ENV=production
+      - PORT=8086
+    volumes:
+      - ./bidding-service:/app # Mount the local code into the container
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8086/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    restart: unless-stopped
+
+  auction-service:
+    build:
+      context: .
+      dockerfile: auction-service/Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      - GO_ENV=production
+      - PORT=8085
+      - BIDDING_SERVICE_URL=http://bidding-service:8086
+    depends_on:
+      - bidding-service
+    volumes:
+      - ./auction-service:/app # Mount the local code into the container
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8085/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge
