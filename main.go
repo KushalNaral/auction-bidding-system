@@ -10,26 +10,8 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 )
 
-type Auction struct {
-	name string
-}
-
-type Bidder struct {
-	name string
-}
-
-type Ad struct {
-	AdId     string
-	BidPrice uint64
-	IsOpen   bool
-}
-
-type AdRequest struct {
-	AdPlacementId string
-	AdSlot        bool
-}
-
 func main() {
+
 	app := pocketbase.New()
 
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {

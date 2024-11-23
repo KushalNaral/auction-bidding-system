@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func main() {
+func CheckHealth() {
 	log.Printf("Starting Auction Service on port 8081")
 
 	// Health check endpoint
@@ -17,4 +17,26 @@ func main() {
 	if err := http.ListenAndServe(":8085", nil); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
+}
+
+func main() {
+
+	CheckHealth()
+	// Orchestrates the auction, managing bid collection, aggregating bids, and selecting the winner.
+}
+
+func ManageAuction() {
+}
+
+func ManageBidCollection() {
+}
+
+func AggregateBids() {
+
+}
+
+func SelectWinner() {
+}
+
+func ValidateResponse() {
 }
